@@ -63,7 +63,7 @@ fun BusinessCard() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Parte superior preta com foto e nome
+            // Parte superior foto e nome
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,19 +114,19 @@ fun BusinessCard() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Contatos - Formatados em duas colunas para melhor organização
+            // Contatos 
             ContactRow(icon = Icons.Default.Call, text = "84 9 9999-9999")
             Spacer(modifier = Modifier.height(12.dp))
             ContactRow(icon = Icons.Default.Email, text = "wesllenfernandes@email.com")
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Usando ícones personalizados para LinkedIn e GitHub
+            //ícones personalizados 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ContactItemWithImage(
-                    iconRes = R.drawable.lin, // Arquivo PNG ou SVG no drawable
+                    iconRes = R.drawable.lin, 
                     text = "Linkedin/wesllen",
                     modifier = Modifier.weight(1f)
                 )
@@ -134,7 +134,7 @@ fun BusinessCard() {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 ContactItemWithImage(
-                    iconRes = R.drawable.git, // Arquivo PNG ou SVG no drawable
+                    iconRes = R.drawable.git, 
                     text = "GitHub Wesllen",
                     modifier = Modifier.weight(1f)
                 )
