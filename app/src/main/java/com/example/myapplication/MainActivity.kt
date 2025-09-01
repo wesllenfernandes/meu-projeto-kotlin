@@ -13,9 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.myapplication.screens.ProjectListScreen
+import com.example.myapplication.screens.ProjectDetailScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,15 +46,49 @@ class MainActivity : ComponentActivity() {
                         .background(Color.Gray),
                     color = Color.Gray
                 ) {
-                    BusinessCard()
+                    AppNavigation()
                 }
             }
         }
     }
 }
 
+// ---------- NAVIGATION ----------
 @Composable
-fun BusinessCard() {
+fun AppNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "profile"
+    ) {
+        composable("profile") {
+            BusinessCard(onNavigateToProjects = {
+                navController.navigate("project_list")
+            })
+        }
+
+        composable("project_list") {
+            ProjectListScreen(
+                onProjectClick = { projectId ->
+                    navController.navigate("project_detail/$projectId")
+                }
+            )
+        }
+
+        composable(
+            "project_detail/{projectId}",
+            arguments = listOf(navArgument("projectId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val projectId = backStackEntry.arguments?.getInt("projectId")
+            ProjectDetailScreen(projectId = projectId)
+        }
+    }
+}
+
+// ---------- PROFILE SCREEN ----------
+@Composable
+fun BusinessCard(onNavigateToProjects: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -114,19 +153,19 @@ fun BusinessCard() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Contatos 
+            // Contatos
             ContactRow(icon = Icons.Default.Call, text = "84 9 9999-9999")
             Spacer(modifier = Modifier.height(12.dp))
             ContactRow(icon = Icons.Default.Email, text = "wesllenfernandes@email.com")
             Spacer(modifier = Modifier.height(12.dp))
 
-            //ícones personalizados 
+            // ícones personalizados
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ContactItemWithImage(
-                    iconRes = R.drawable.lin, 
+                    iconRes = R.drawable.lin,
                     text = "Linkedin/wesllen",
                     modifier = Modifier.weight(1f)
                 )
@@ -134,14 +173,23 @@ fun BusinessCard() {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 ContactItemWithImage(
-                    iconRes = R.drawable.git, 
+                    iconRes = R.drawable.git,
                     text = "GitHub Wesllen",
                     modifier = Modifier.weight(1f)
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botão para navegar até a lista de projetos
+            Button(onClick = onNavigateToProjects) {
+                Text(text = "Ver Projetos")
+            }
         }
     }
 }
+
+// ---------- REUTILIZÁVEIS ----------
 @Composable
 fun ContactItemWithImage(iconRes: Int, text: String, modifier: Modifier = Modifier) {
     Row(
@@ -161,6 +209,7 @@ fun ContactItemWithImage(iconRes: Int, text: String, modifier: Modifier = Modifi
         )
     }
 }
+
 @Composable
 fun ContactRow(icon: ImageVector, text: String) {
     Row(
