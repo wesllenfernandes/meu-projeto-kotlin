@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// ---------- NAVIGATION ----------
+// navegação
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -86,7 +86,7 @@ fun AppNavigation() {
     }
 }
 
-// ---------- PROFILE SCREEN ----------
+// screem
 @Composable
 fun BusinessCard(onNavigateToProjects: () -> Unit) {
     Box(
@@ -189,7 +189,7 @@ fun BusinessCard(onNavigateToProjects: () -> Unit) {
     }
 }
 
-// ---------- REUTILIZÁVEIS ----------
+// reutilizavel
 @Composable
 fun ContactItemWithImage(iconRes: Int, text: String, modifier: Modifier = Modifier) {
     Row(
