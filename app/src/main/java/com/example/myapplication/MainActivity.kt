@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -25,19 +25,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.myapplication.screens.ProjectListScreen
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.remote.RetrofitInstance
+import com.example.myapplication.data.repository.ProjectRepository
 import com.example.myapplication.screens.ProjectDetailScreen
+import com.example.myapplication.screens.ProjectListScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.viewmodel.ProjectViewModel
+import com.example.myapplication.model.Project
+import androidx.compose.foundation.Image
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: ProjectViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                // Criar instâncias necessárias
+                val database = AppDatabase.getDatabase(applicationContext)
+                val apiService = RetrofitInstance.api
+                val repository = ProjectRepository(apiService, database.projectDao())
+                return ProjectViewModel(repository) as T
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -46,7 +68,7 @@ class MainActivity : ComponentActivity() {
                         .background(Color.Gray),
                     color = Color.Gray
                 ) {
-                    AppNavigation()
+                    AppNavigation(viewModel)
                 }
             }
         }
@@ -55,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
 // navegação
 @Composable
-fun AppNavigation() {
+fun AppNavigation(viewModel: ProjectViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -70,6 +92,7 @@ fun AppNavigation() {
 
         composable("project_list") {
             ProjectListScreen(
+                viewModel = viewModel,
                 onProjectClick = { projectId ->
                     navController.navigate("project_detail/$projectId")
                 }
@@ -81,7 +104,10 @@ fun AppNavigation() {
             arguments = listOf(navArgument("projectId") { type = NavType.IntType })
         ) { backStackEntry ->
             val projectId = backStackEntry.arguments?.getInt("projectId")
-            ProjectDetailScreen(projectId = projectId)
+            ProjectDetailScreen(
+                projectId = projectId,
+                viewModel = viewModel
+            )
         }
     }
 }
